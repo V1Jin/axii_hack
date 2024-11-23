@@ -1,0 +1,3 @@
+p = "ksdlada"
+
+print (p)
