@@ -32,15 +32,15 @@ tax_systems = {
 }
 
 
-response = {
-    "business": "Детская спортивная школа",
-    "region": "Краснодар",
-    "scale": 1,
-    "taxSystem": 1,
-    "filters": [
-        1, 2, 3
-    ]
-}
+# response = {
+#     "business": "Детская спортивная школа",
+#     "region": "Краснодар",
+#     "scale": 1,
+#     "taxSystem": 1,
+#     "filters": [
+#         1, 2, 3
+#     ]
+# }
 
 def creating_promt(response):
     global filters
@@ -61,27 +61,14 @@ def creating_promt(response):
     prompt += " Для бизнеса '" + response["business"] + "' "
     return [prompt,named_filters]
 
-def main():
+def magic(response):
     global tax_systems
     global filters
     global path
-    
+    open("Itog.json","w").close()
+    open("answer.json","w").close()
+    open("tempo.json","w").close()
 
-    # @app.route("/api/send_data", methods=["POST"])
-    # def send_data():
-    #     global response
-    #     response = request.get_json()
-
-    #     return response
-    response = {
-    "business": "Детская спортивная школа",
-    "region": "Краснодар",
-    "scale": 1,
-    "taxSystem": 1,
-    "filters": [
-        1, 2, 3
-        ]
-    }
     # print (creating_promt(response))
 
     promt_list = creating_promt(response)
@@ -105,13 +92,25 @@ def main():
                     temp[x]["content"] += gpt_text[x]["content"]   
     with open("tempo.json", "a", encoding="utf-8") as file:
         json.dump(temp, file, ensure_ascii=False, indent=4)
+
     print (str(temp))
-    Itog_gpt_text = GPT.gpt_progon(temp)  
+    for i in range(len(promt_list[1])):
+        Itog_gpt_text = GPT.gpt_progon(temp[i]["content"])
+        if (Itog_gpt_text != None and Itog_gpt_text != "error"):
+            temp[i]["content"] = Itog_gpt_text
     with open("Itog.json", "a", encoding="utf-8") as file:
-        json.dump(Itog_gpt_text, file, ensure_ascii=False, indent=4)
+        json.dump(temp, file, ensure_ascii=False, indent=4)
 #прогнать каждый тхт через чатгпт, потом в json еще раз пребразуем чтоб подровнять
 
-
+def main():
+    @app.route("/api/send_data", methods=["POST"])
+    def send_data():
+        # global response
+        response = request.get_json()
+        magic(response)
+        with open("Itog.json","r",encoding="utf-8") as file:
+            data = json.load(file)
+        return data
 
 
 if __name__ == "__main__":

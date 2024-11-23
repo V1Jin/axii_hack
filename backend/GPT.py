@@ -37,7 +37,7 @@ def gpt_progon(text):
     client = Client()
     response = client.chat.completions.create(
         model="gpt-4o-mini",
-        messages=[{"role": "user", "content": "Ты работаешь только со значениями в ключах 'content': Не изменяй никакие слова в тексте, ты подравнять текст, чтоб он читался хорошо " + text }],
+        messages=[{"role": "user", "content": "Не изменяй никакие слова в тексте, ты должен подравнять текст, чтоб он читался лучше " + text }],
         # Add any other necessary parameters
     )
     jason = response.choices[0].message.content[8:-4]
