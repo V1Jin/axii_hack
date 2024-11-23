@@ -92,11 +92,23 @@ def main():
 
     text = zapros.get_text(got_links[0]["link"],0)
     temp = GPT.get_gpt_text(text, promt_list[1])
-    # print (temp)
-    # for i in range(1,len(got_links)):
-    #     text = zapros.get_text(got_links[i]["link"],i)
-    #     temp += GPT.get_gpt_text(text, promt_list[1])
-        
+    for i in range(1,len(got_links)):
+        text = zapros.get_text(got_links[i]["link"],i)
+        gpt_text = GPT.get_gpt_text(text, promt_list[1])
+        print ("gpt_text = ", gpt_text)
+        if (gpt_text != "error" and gpt_text):
+            if (temp == None):
+                temp = gpt_text
+            else:    
+                for x in range(len(promt_list[1])):
+                    print ("x = ", x)
+                    temp[x]["content"] += gpt_text[x]["content"]   
+    with open("tempo.json", "a", encoding="utf-8") as file:
+        json.dump(temp, file, ensure_ascii=False, indent=4)
+    print (str(temp))
+    Itog_gpt_text = GPT.gpt_progon(temp)  
+    with open("Itog.json", "a", encoding="utf-8") as file:
+        json.dump(Itog_gpt_text, file, ensure_ascii=False, indent=4)
 #прогнать каждый тхт через чатгпт, потом в json еще раз пребразуем чтоб подровнять
 
 
