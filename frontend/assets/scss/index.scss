@@ -3,6 +3,7 @@
 @import "./reset.scss";
 @import "./fonts.scss";
 
+@import "./blocks/intro.scss";
 @import "./blocks/sidebar.scss";
 @import "./blocks/dialogue.scss";
 @import "./blocks/preload.scss";
@@ -25,8 +26,32 @@ html {
     height: 100dvh;
 }
 
-.app .container.main_window {
-    padding-top: 2rem;
+
+@media (min-width: 1025px) {
+    .app .container.main_window {
+        padding-top: 2rem;
+    }
+
+    .dialogue {
+        overflow-y: hidden;
+    }
+}
+
+.app .container:not(.--active) {
+    display: none;
+}
+
+@keyframes hideIntroMenu {
+    0% {
+        opacity: 100%;
+    }
+    99% {
+        opacity: 0%;
+        display: flex;
+    }
+    100% {
+        display: none;
+    }
 }
 
 .app .container {
