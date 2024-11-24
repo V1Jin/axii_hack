@@ -1,0 +1,115 @@
+.preload {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+
+    z-index: 100;
+
+    animation: 0.8s hidePreload 5.5s ease forwards;
+}
+.preload .container {
+    height: 100%;
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+
+    background-color: #000000;
+}
+.preload__logo {
+    display: flex;
+    gap: 0.5rem;
+
+    color: #ffffff;
+
+    font-size: 2.2rem;
+
+    animation: 2.5s increaseSize 3.5s ease forwards;
+}
+.preload__logo span {
+    border-radius: 4px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: rgba(255, 255, 255, 1);
+    color: #131313;
+
+    width: 34px;
+    aspect-ratio: 1;
+}
+.preload__progress {
+    width: 16rem;
+    height: 0.5rem;
+    
+    border-radius: 1rem;
+    background-color: rgba(255, 255, 255, 0.3);
+    
+    animation: 0.8s hideProgressBar 3.5s ease forwards;
+}
+.preload__progress-line {
+    height: 100%;
+    width: 30px;
+
+    background-color: rgba(255, 255, 255, 1);
+    border-radius: 1rem;
+
+    animation: progressBar 3s ease forwards;
+}
+
+@keyframes hidePreload {
+    0% {
+        opacity: 100%;
+        display: flex;
+    }
+    99% {
+        display: flex;
+    }
+    100% {
+        display: none;
+        opacity: 0;
+    }
+}
+
+@keyframes increaseSize {
+    0% {
+        transform: scale(1);
+    }
+    75% {
+        transform: scale(1.5);
+        opacity: 100%;
+    }
+    100% {
+        transform: scale(5);
+        opacity: 0;
+    }
+}
+
+@keyframes hideProgressBar {
+    0% {
+        opacity: 100%;
+    }
+    100% {
+        transform: translateY(50px);
+        opacity: 0%;
+    }
+}
+
+@keyframes progressBar {
+    0% {
+        width: 0;
+    }
+    60% {
+        width: 30%;
+    }
+    80% {
+        width: 40%;
+    }
+    100% {
+        width: 100%;
+    }
+}
