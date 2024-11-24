@@ -57,6 +57,18 @@ def gpt_progon(text):
         print ("error = ", ex)
         return "error" 
 
+def gpt_query(text):
+    client = Client()
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": "Ответь на русском не используя переход на новую строку: " + text }],
+        # Add any other necessary parameters
+    )
+    jason = str(response.choices[0].message.content)
+    print (jason)
+    return jason
+
+
 
 # [
 #     {

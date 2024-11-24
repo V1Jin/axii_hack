@@ -1,3 +1,5 @@
-p = [1,2,3,4,5,6]
+with open("Itog.txt","r",encoding="utf-8") as file:
+    data = file.read()
 
-print (str(p) + '1')
+print (data)
+print (type(data))

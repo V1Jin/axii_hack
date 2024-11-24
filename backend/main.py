@@ -32,45 +32,61 @@ tax_systems = {
 }
 
 
-# response = {
-#     "business": "Детская спортивная школа",
-#     "region": "Краснодар",
-#     "scale": 1,
-#     "taxSystem": 1,
-#     "filters": [
-#         1, 2, 3
-#     ]
-# }
+response = {
+    "business": "Детская спортивная школа",
+    "region": "Краснодар",
+    "scale": 1,
+    "taxSystem": 1,
+    "filters": [
+        1, 2, 3
+    ],
+    "query": "Привет, какие есть меры поддержки финансов?"
+}
 
 def creating_promt(response):
     global filters
     global tax_systems
-    named_filters = []
-    prompt = "Получение  "  
-    for i in response["filters"]:
-        prompt +=  filters[i] + ", "
-        named_filters.append(filters[i])
-    prompt += " для региона " + response["region"]
-    if (response["scale"] == 1):
-        prompt += " Малого бизнеса"
-    elif (response["scale"] == 2):
-        prompt += " Среднего бизнеса"
+
+    if (response["query"]):
+        named_filters = []
+        prompt = "Получение  "  
+        for i in response["filters"]:
+            prompt +=  filters[i] + ", "
+            named_filters.append(filters[i])
+        prompt += " для региона " + response["region"]
+        if (response["scale"] == 1):
+            prompt += " Малого бизнеса"
+        elif (response["scale"] == 2):
+            prompt += " Среднего бизнеса"
+        else:
+            prompt += " Крупного бизнеса"
+        prompt += " с " + tax_systems[response["taxSystem"]]
+        prompt += " Для бизнеса '" + response["business"] + "' "
+        return [prompt,named_filters]
     else:
-        prompt += " Крупного бизнеса"
-    prompt += " с " + tax_systems[response["taxSystem"]]
-    prompt += " Для бизнеса '" + response["business"] + "' "
-    return [prompt,named_filters]
+        named_filters = []
+        prompt = response["query"]
+        for i in response["filters"]:
+            prompt +=  filters[i] + ", "
+            named_filters.append(filters[i])
+        prompt += " для региона " + response["region"]
+        if (response["scale"] == 1):
+            prompt += " Малого бизнеса"
+        elif (response["scale"] == 2):
+            prompt += " Среднего бизнеса"
+        else:
+            prompt += " Крупного бизнеса"
+        prompt += " с " + tax_systems[response["taxSystem"]]
+        prompt += " Для бизнеса '" + response["business"] + "' "
+        return [prompt,named_filters]
 
 def magic(response):
     global tax_systems
     global filters
     global path
-    open("Itog.json","w").close()
-    open("answer.json","w").close()
-    open("tempo.json","w").close()
 
     # print (creating_promt(response))
-
+    print ("magic is running...")
     promt_list = creating_promt(response)
     print ("PROMT LIST = ", promt_list[1])
     print ("Запрос - " + promt_list[0])
@@ -102,15 +118,41 @@ def magic(response):
         json.dump(temp, file, ensure_ascii=False, indent=4)
 #прогнать каждый тхт через чатгпт, потом в json еще раз пребразуем чтоб подровнять
 
+def magic_query(response):
+    print ("magic query is running...")
+    text = GPT.gpt_query(response)
+    print (text)
+    with open("Itog.txt", "a", encoding="utf-8") as file:
+        file.write(text)
+
+
 def main():
     @app.route("/api/send_data", methods=["POST"])
     def send_data():
+        open("Itog.json","w").close()
+        open("answer.json","w").close()
+        open("tempo.json","w").close()
         # global response
         response = request.get_json()
         magic(response)
         with open("Itog.json","r",encoding="utf-8") as file:
             data = json.load(file)
         return data
+    @app.route("/api/send_query", methods=["POST"])
+    def send_query():
+        open("Itog.json","w").close()
+        open("answer.json","w").close()
+        open("tempo.json","w").close()
+        # global response
+        response = request.get_json()
+        magic_query(response["query"])
+        with open("Itog.txt","r",encoding="utf-8") as file:
+            data = str(file.read())
+        tos_data = {
+            "query": data
+        }
+        print ("Sent data_query = ", data)
+        return tos_data
 
 
 if __name__ == "__main__":
