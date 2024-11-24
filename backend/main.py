@@ -40,45 +40,29 @@ response = {
     "filters": [
         1, 2, 3
     ],
-    "query": "Привет, какие есть меры поддержки финансов?"
+    "query": None
 }
 
 def creating_promt(response):
     global filters
     global tax_systems
 
-    if (response["query"]):
-        named_filters = []
-        prompt = "Получение  "  
-        for i in response["filters"]:
-            prompt +=  filters[i] + ", "
-            named_filters.append(filters[i])
-        prompt += " для региона " + response["region"]
-        if (response["scale"] == 1):
-            prompt += " Малого бизнеса"
-        elif (response["scale"] == 2):
-            prompt += " Среднего бизнеса"
-        else:
-            prompt += " Крупного бизнеса"
-        prompt += " с " + tax_systems[response["taxSystem"]]
-        prompt += " Для бизнеса '" + response["business"] + "' "
-        return [prompt,named_filters]
+    named_filters = []
+    prompt = "Получение  "  
+    for i in response["filters"]:
+        prompt +=  filters[i] + ", "
+        named_filters.append(filters[i])
+    prompt += " для региона " + response["region"]
+    if (response["scale"] == 1):
+        prompt += " Малого бизнеса"
+    elif (response["scale"] == 2):
+        prompt += " Среднего бизнеса"
     else:
-        named_filters = []
-        prompt = response["query"]
-        for i in response["filters"]:
-            prompt +=  filters[i] + ", "
-            named_filters.append(filters[i])
-        prompt += " для региона " + response["region"]
-        if (response["scale"] == 1):
-            prompt += " Малого бизнеса"
-        elif (response["scale"] == 2):
-            prompt += " Среднего бизнеса"
-        else:
-            prompt += " Крупного бизнеса"
-        prompt += " с " + tax_systems[response["taxSystem"]]
-        prompt += " Для бизнеса '" + response["business"] + "' "
-        return [prompt,named_filters]
+        prompt += " Крупного бизнеса"
+    prompt += " с " + tax_systems[response["taxSystem"]]
+    prompt += " Для бизнеса '" + response["business"] + "' "
+    return [prompt,named_filters]
+
 
 def magic(response):
     global tax_systems
@@ -95,17 +79,19 @@ def magic(response):
 
     text = zapros.get_text(got_links[0]["link"],0)
     temp = GPT.get_gpt_text(text, promt_list[1])
-    for i in range(1,len(got_links)):
-        text = zapros.get_text(got_links[i]["link"],i)
-        gpt_text = GPT.get_gpt_text(text, promt_list[1])
-        print ("gpt_text = ", gpt_text)
-        if (gpt_text != "error" and gpt_text):
-            if (temp == None):
-                temp = gpt_text
-            else:    
-                for x in range(len(promt_list[1])):
-                    print ("x = ", x)
-                    temp[x]["content"] += gpt_text[x]["content"]   
+    for i in range(1,len(got_links)-9):
+        try:
+            text = zapros.get_text(got_links[i]["link"],i)
+            gpt_text = GPT.get_gpt_text(text, promt_list[1])
+            print ("gpt_text = ", gpt_text)
+            if (gpt_text != "error" and gpt_text):
+                if (temp == None):
+                    temp = gpt_text
+                else:    
+                    for x in range(len(promt_list[1])):
+                        print ("x = ", x)
+                        temp[x]["content"] += gpt_text[x]["content"]
+        except Exception as ex: print ("ERRORR === ", ex)   
     with open("tempo.json", "a", encoding="utf-8") as file:
         json.dump(temp, file, ensure_ascii=False, indent=4)
 
@@ -126,34 +112,34 @@ def magic_query(response):
         file.write(text)
 
 
-def main():
-    @app.route("/api/send_data", methods=["POST"])
-    def send_data():
-        open("Itog.json","w").close()
-        open("answer.json","w").close()
-        open("tempo.json","w").close()
-        # global response
-        response = request.get_json()
-        magic(response)
-        with open("Itog.json","r",encoding="utf-8") as file:
-            data = json.load(file)
-        return data
-    @app.route("/api/send_query", methods=["POST"])
-    def send_query():
-        open("Itog.json","w").close()
-        open("answer.json","w").close()
-        open("tempo.json","w").close()
-        # global response
-        response = request.get_json()
-        magic_query(response["query"])
-        with open("Itog.txt","r",encoding="utf-8") as file:
-            data = str(file.read())
-        tos_data = {
-            "query": data
-        }
-        print ("Sent data_query = ", data)
-        return tos_data
+# def main():
+#     global app
+#     app.run(debug=False)
+@app.route("/api/send_data", methods=["POST"])
+def send_data():
+    open("Itog.json","w").close()
+    open("answer.json","w").close()
+    open("tempo.json","w").close()
+    # global response
+    response = request.get_json()
+    magic(response)
+    with open("Itog.json","r",encoding="utf-8") as file:
+        data = json.load(file)
+    return data
+@app.route("/api/send_query", methods=["POST"])
+def send_query():
+    open("Itog.json","w").close()
+    open("answer.json","w").close()
+    open("tempo.json","w").close()
+    # global response
+    response = request.get_json()
+    magic_query(response["query"])
+    with open("Itog.txt","r",encoding="utf-8") as file:
+        data = str(file.read())
+    print ("Sent data_query = ", data)
+    return jsonify(query = data)
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+    app.run(debug=False)

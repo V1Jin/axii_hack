@@ -3,7 +3,11 @@ import requests
 from bs4 import BeautifulSoup
 
 
-headers = {
+
+
+
+def get_text(url,num):
+    headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
     'Accept-Language': 'en-US,en;q=0.5',
@@ -11,12 +15,6 @@ headers = {
     'Connection': 'keep-alive',
     'Upgrade-Insecure-Requests': '1'
 }
-
-
-links = ["https://kontur.ru/articles/4710", "https://moibiz93.ru/fin-support/" , "https://www.yuga.ru/articles/economy/8983.html", "https://xn--90aifddrld7a.xn--p1ai/knowledge/sotskontrakt-kak-poluchit-dengi-na-otkrytie-biznesa-v-2024-godu/"]
-
-
-def get_text(url,num):
     response = requests.get(url, headers=headers)
     if response.status_code != 200:
         print(f"Ошибка при выполнении запроса к {url}: {response.status_code}")
@@ -34,8 +32,7 @@ def get_text(url,num):
         return text
 
 
-for i in range(len(links)):
-    get_text(links[i],i)
+
 
 # text = open(r"C:\Programs\backend\sometext.txt","r", encoding="utf-8").read()
 

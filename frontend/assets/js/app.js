@@ -21,3 +21,24 @@ function openFilters() {
 function closeFilters() {
     document.querySelector(".sidebar__content").classList.remove("--active");
 }
+
+dict = {
+    business: "Детская спортивная школа",
+    region: "Краснодар",
+    scale: 1,
+    taxSystem: 1,
+    filters: [
+        1, 2, 3
+    ],
+    query: null
+}
+fetch ("http://127.0.0.1:5000/api/send_data",{method:"POST",
+    headers: {
+        'Content-type': "application/json"
+    },
+    body: JSON.stringify(dict)
+}) 
+.then(response => {
+    // console.log("response = ", response.json())
+    console.log(response.status)
+    return response.json()})
